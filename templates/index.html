@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tongues — Natural Translation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --saffron: #E8651A;
+      --teal-pale: #E8F5F3;
+      --ink: #1C1C1C;
+      --ink-light: #4A4A4A;
+      --mist: #F7F4F0;
+      --mist-dark: #EDE8E2;
+      --white: #FFFFFF;
+      --gold: #C9952A;
+      --note-bg: #FFFBF0;
+      --note-border: #F0D080;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--mist);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(232,101,26,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 85% 80%, rgba(26,122,110,0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .logo-icon { font-size: 44px; margin-bottom: 8px; display: block; }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 7vw, 64px);
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    h1 span { color: var(--saffron); }
+    .tagline { font-size: 15px; color: var(--ink-light); font-weight: 300; margin-bottom: 16px; }
+    .lang-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+    .lang-pill {
+      font-size: 12px; font-weight: 500; padding: 4px 14px;
+      border-radius: 100px; background: var(--white);
+      border: 1px solid var(--mist-dark); color: var(--ink-light);
+    }
+    .card {
+      background: var(--white); border-radius: 24px; padding: 36px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+    }
+    .lang-row {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      gap: 12px; align-items: end; margin-bottom: 24px;
+    }
+    .lang-group label {
+      display: block; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--ink-light); margin-bottom: 8px;
+    }
+    .lang-group select {
+      width: 100%; padding: 13px 16px; border: 2px solid var(--mist-dark);
+      border-radius: 12px; font-family: 'DM Sans', sans-serif;
+      font-size: 15px; font-weight: 500; color: var(--ink);
+      background: var(--white); appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%234A4A4A' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      cursor: pointer; outline: none; transition: border-color 0.2s;
+    }
+    .lang-group select:focus { border-color: var(--saffron); }
+    .swap-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 2px solid var(--mist-dark); background: var(--white);
+      cursor: pointer; font-size: 18px; color: var(--ink-light);
+      transition: all 0.25s; margin-bottom: 2px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .swap-btn:hover { border-color: var(--saffron); color: var(--saffron); transform: rotate(180deg); }
+    .text-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .text-group label {
+      display: block; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--ink-light); margin-bottom: 8px;
+    }
+    textarea {
+      width: 100%; height: 190px; padding: 16px;
+      border: 2px solid var(--mist-dark); border-radius: 14px;
+      font-family: 'DM Sans', sans-serif; font-size: 15px;
+      line-height: 1.6; color: var(--ink); resize: vertical;
+      background: var(--white); outline: none; transition: border-color 0.2s;
+    }
+    textarea::placeholder { color: #B0ABA4; }
+    textarea:focus { border-color: var(--saffron); }
+    #outputText { background: var(--teal-pale); border-color: transparent; cursor: default; }
+    #outputText:focus { border-color: transparent; }
+    .char-count { font-size: 11px; color: #B0ABA4; text-align: right; margin-top: 4px; }
+    .error-msg {
+      background: #FFF0F0; border: 1.5px solid #FFCDD2;
+      border-radius: 12px; padding: 13px 16px; font-size: 14px;
+      color: #C62828; margin-bottom: 16px; display: none; word-break: break-word;
+    }
+    .error-msg.visible { display: block; }
+    .btn-row { display: flex; justify-content: center; margin-bottom: 24px; }
+    .translate-btn {
+      padding: 14px 52px; background: linear-gradient(135deg, #E8651A, #D4561A);
+      color: white; border: none; border-radius: 100px;
+      font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(232,101,26,0.35);
+      transition: all 0.25s; display: flex; align-items: center; gap: 8px;
+    }
+    .translate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,101,26,0.4); }
+    .translate-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .spinner {
+      width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.7s linear infinite; display: none;
+    }
+    .divider { height: 1px; background: var(--mist-dark); margin: 24px 0; }
+    .cultural-note { border-radius: 14px; padding: 18px 20px; }
+    .cultural-note.has-note { background: var(--note-bg); border: 1.5px solid var(--note-border); }
+    .cultural-note.empty { background: #FAFAF8; border: 1.5px dashed var(--mist-dark); text-align: center; }
+    .note-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .note-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
+    .note-text { font-size: 14px; line-height: 1.7; color: var(--ink-light); font-style: italic; margin: 0; }
+    .note-placeholder { font-size: 14px; color: #B0ABA4; font-style: italic; }
+    footer { text-align: center; margin-top: 40px; font-size: 13px; color: #B0ABA4; }
+    footer em { font-family: 'Playfair Display', serif; color: var(--saffron); font-style: italic; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 600px) {
+      .card { padding: 24px 16px; }
+      .text-row { grid-template-columns: 1fr; }
+      .lang-row { gap: 8px; }
+      .swap-btn { width: 36px; height: 36px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <span class="logo-icon">🗣️</span>
+    <h1>T<span>o</span>ngues</h1>
+    <p class="tagline">Natural, culturally aware translation — meaning for meaning, not word for word.</p>
+    <div class="lang-pills">
+      <span class="lang-pill">English</span>
+      <span class="lang-pill">हिन्दी Hindi</span>
+      <span class="lang-pill">ગુજરાતી Gujarati</span>
+      <span class="lang-pill">मराठी Marathi</span>
+      <span class="lang-pill">Español Spanish</span>
+    </div>
+  </header>
+
+  <div class="card">
+    <div class="lang-row">
+      <div class="lang-group">
+        <label>Translate From</label>
+        <select id="sourceLang">
+          <option value="English">English</option>
+          <option value="Hindi">Hindi — हिन्दी</option>
+          <option value="Gujarati" selected>Gujarati — ગુજરાતી</option>
+          <option value="Marathi">Marathi — मराठी</option>
+          <option value="Spanish">Spanish — Español</option>
+        </select>
+      </div>
+      <button class="swap-btn" onclick="swapLanguages()" title="Swap languages">⇄</button>
+      <div class="lang-group">
+        <label>Translate To</label>
+        <select id="targetLang">
+          <option value="English" selected>English</option>
+          <option value="Hindi">Hindi — हिन्दी</option>
+          <option value="Gujarati">Gujarati — ગુજરાતી</option>
+          <option value="Marathi">Marathi — मराठी</option>
+          <option value="Spanish">Spanish — Español</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="text-row">
+      <div class="text-group">
+        <label>Your Text</label>
+        <textarea id="inputText" placeholder="Type or paste your text here — in any script or Roman letters..." oninput="updateCharCount()" maxlength="2000"></textarea>
+        <div class="char-count"><span id="charCount">0</span> / 2000</div>
+      </div>
+      <div class="text-group">
+        <label>Translation</label>
+        <textarea id="outputText" placeholder="Your natural, human translation will appear here..." readonly></textarea>
+      </div>
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="btn-row">
+      <button class="translate-btn" id="translateBtn" onclick="runTranslation()">
+        <div class="spinner" id="spinner"></div>
+        <span id="btnText">✨ Translate</span>
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="cultural-note empty" id="culturalNote">
+      <p class="note-placeholder">📝 Cultural context and tone notes will appear here after translation</p>
+    </div>
+  </div>
+
+  <footer>
+    Built with love — because every language deserves to be <em>understood</em>, not just translated.
+  </footer>
+</div>
+
+<script>
+  function updateCharCount() {
+    document.getElementById('charCount').textContent = document.getElementById('inputText').value.length;
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
+
+  function hideError() {
+    document.getElementById('errorMsg').classList.remove('visible');
+  }
+
+  function setLoading(isLoading) {
+    const btn = document.getElementById('translateBtn');
+    document.getElementById('spinner').style.display = isLoading ? 'block' : 'none';
+    document.getElementById('btnText').textContent = isLoading ? 'Translating...' : '✨ Translate';
+    btn.disabled = isLoading;
+  }
+
+  function swapLanguages() {
+    const src = document.getElementById('sourceLang');
+    const tgt = document.getElementById('targetLang');
+    const inputText = document.getElementById('inputText');
+    const outputText = document.getElementById('outputText');
+    [src.value, tgt.value] = [tgt.value, src.value];
+    [inputText.value, outputText.value] = [outputText.value, inputText.value];
+    updateCharCount();
+    hideError();
+  }
+
+  function updateCulturalNote(note) {
+    const el = document.getElementById('culturalNote');
+    if (note) {
+      el.className = 'cultural-note has-note';
+      el.innerHTML = `
+        <div class="note-header">
+          <span style="font-size:18px">📝</span>
+          <span class="note-title">Tone & Cultural Note</span>
+        </div>
+        <p class="note-text">${note}</p>`;
+    } else {
+      el.className = 'cultural-note empty';
+      el.innerHTML = '<p class="note-placeholder">📝 Cultural context and tone notes will appear here after translation</p>';
+    }
+  }
+
+  async function runTranslation() {
+    const inputText = document.getElementById('inputText').value.trim();
+    const sourceLang = document.getElementById('sourceLang').value;
+    const targetLang = document.getElementById('targetLang').value;
+
+    hideError();
+    if (!inputText) { showError('Please enter some text to translate.'); return; }
+    if (sourceLang === targetLang) { showError('Please select two different languages.'); return; }
+
+    setLoading(true);
+    document.getElementById('outputText').value = '';
+    updateCulturalNote('');
+
+    try {
+      const response = await fetch('/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: inputText,
+          source_lang: sourceLang,
+          target_lang: targetLang
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Something went wrong. Please try again.');
+      }
+
+      document.getElementById('outputText').value = data.translation;
+      updateCulturalNote(data.cultural_note);
+
+    } catch (err) {
+      showError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') runTranslation();
+  });
+</script>
+</body>
+</html>
