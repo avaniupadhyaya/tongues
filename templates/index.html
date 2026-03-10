@@ -166,7 +166,7 @@
         <span class="input-label">Your Text</span>
         <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Speak to translate">🎤</button>
       </div>
-      <textarea id="inputText" placeholder="Type, paste, or speak your text — in any script or Roman letters..." oninput="updateCharCount()" maxlength="2000"></textarea>
+      <textarea id="inputText" placeholder="Type, paste, or speak your text — in any script or Roman letters..." oninput="updateCharCount(); if(!this.value.trim()) resetOutput();" maxlength="2000"></textarea>
       <div class="char-count"><span id="charCount">0</span> / 2000</div>
     </div>
 
