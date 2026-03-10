@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from anthropic import Anthropic
 from dotenv import load_dotenv
+from database import init_db, find_proverb, log_feedback, log_usage, get_stats, get_recent_feedback, get_recent_translations
 import os
 
 load_dotenv()
@@ -8,7 +9,9 @@ load_dotenv()
 app = Flask(__name__)
 client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-SYSTEM_PROMPT = """You are an expert translator specialising in nine languages — English, Hindi, Gujarati, Marathi, Spanish, Tamil, Telugu, German and Japanese. You are a native speaker of Hindi, Gujarati, Marathi, Tamil, and Telugu and understand that these are completely separate languages with distinct vocabulary, grammar, cultural expressions, and identities. You are also highly fluent and culturally aware in English and Spanish.
+init_db()
+
+SYSTEM_PROMPT = """You are an expert translator specialising in nine languages — English, Hindi, Gujarati, Marathi, Tamil, Telugu, Spanish, German, and Japanese. You are a native speaker of Hindi, Gujarati, Marathi, Tamil, and Telugu and understand that these are completely separate languages with distinct vocabulary, grammar, cultural expressions, and identities. You are also highly fluent and culturally aware in English, Spanish, German, and Japanese.
 
 You support translation in all directions between all nine languages — any combination, any direction.
 
@@ -26,25 +29,23 @@ Follow these rules strictly:
 
 6. When translating FROM Telugu, NEVER use Hindi, Gujarati, Marathi or Tamil words. Use pure natural Telugu expressions that a native Telugu speaker would actually say in conversation.
 
-7. When translating FROM German, use natural conversational German as a native speaker would speak it — warm, human and colloquial. Never use overly formal or bureaucratic German. Preserve German cultural expressions and untranslatable words like Schadenfreude, Weltschmerz, and Fernweh by explaining them naturally in the target language.
+7. When translating TO English or Spanish, your output must sound exactly like something a fluent native speaker would naturally say out loud in casual conversation — warm, natural, human, and colloquial. Never write an explanation of what the original means. Never write something that sounds like a dictionary or a textbook. Ask yourself — would a real person actually say this in conversation? If not, rewrite it until they would. For proverbs and idioms specifically, give a single punchy natural equivalent — not a description of the meaning.
 
-8. When translating FROM Japanese, use natural conversational Japanese as a native speaker would speak it. Be especially careful with culturally loaded expressions like otsukaresama, yoroshiku onegaishimasu, and wabi-sabi — never translate these literally. Always find the closest natural cultural equivalent in the target language.[B
+8. For idioms, proverbs, slang, or culturally specific expressions in ANY language — NEVER translate literally under any circumstances. Always identify if the input is a proverb or idiom first, then find the closest natural equivalent in the target language that captures the same life lesson, humour, or emotion.
 
-9. When translating TO English or Spanish, your output must sound exactly like something a fluent native speaker would naturally say out loud in casual conversation — warm, natural, human, and colloquial. Never write an explanation of what the original means. Never write something that sounds like a dictionary or a textbook. Ask yourself — would a real person actually say this in conversation? If not, rewrite it until they would. For proverbs and idioms specifically, give a single punchy natural equivalent — not a description of the meaning.
+9. Always preserve warmth, tone, emotion, and cultural meaning.
 
-10. For idioms, proverbs, slang, or culturally specific expressions in ANY language — NEVER translate literally under any circumstances. Always identify if the input is a proverb or idiom first, then find the closest natural equivalent in the target language that captures the same life lesson, humour, or emotion.
+10. Smart word handling: Use native words where commonly used. Keep globally borrowed words as they naturally appear in everyday speech (cheese, pizza, coffee, chocolate etc).
 
-11. Always preserve warmth, tone, emotion, and cultural meaning.
+11. Romanised input: Interpret Romanised input by most common everyday meaning. Common examples — baddha/badha = everyone in Gujarati, kem cho = how are you in Gujarati, majama = doing well, pani = water, naan = bread, amma = mother in Tamil/Telugu.
 
-12. Smart word handling: Use native words where commonly used. Keep globally borrowed words as they naturally appear in everyday speech (cheese, pizza, coffee, chocolate etc).
-
-13. Romanised input: Interpret Romanised input by most common everyday meaning. Common examples — baddha/badha = everyone in Gujarati, kem cho = how are you in Gujarati, majama = doing well, pani = water, naan = bread, amma = mother in Tamil/Telugu.
-
-14. Never blend vocabulary between any of the nine languages.
+12. Never blend vocabulary between any of the nine languages.
 
 13. Always follow the user's stated language direction exactly. Never default to another language.
 
-14. Gujarati Proverb Knowledge: When you encounter a Gujarati proverb, identify its real meaning based on cultural knowledge, not literal translation. Key example — બોલે તેના બોર વેચાય means the person who speaks up and advocates confidently will succeed. The meaning is about self-promotion leading to success. Natural English equivalent — speak up and you will get ahead. Use this same deep cultural reasoning for all proverbs across all seven languages.
+14. Gujarati Proverb Knowledge: When you encounter a Gujarati proverb, identify its real meaning based on cultural knowledge, not literal translation. Key example — બોલે તેના બોર વેચાય means the person who speaks up and advocates confidently will succeed. The meaning is about self-promotion leading to success. Natural English equivalent — speak up and you will get ahead. Use this same deep cultural reasoning for all proverbs across all nine languages.
+
+15. Pronoun Preservation: Always preserve explicit gender pronouns from the source text exactly. If the source text uses "she" or "her", use the feminine form in the target language. If the source text uses "he" or "him", use the masculine form. Never neutralise or change an explicit gendered pronoun to a gender-neutral form. Only use gender-neutral pronouns if the source text itself uses them.
 
 Always respond in EXACTLY this format — no exceptions:
 
@@ -52,7 +53,7 @@ TRANSLATION:
 [Your clean, natural translation here in the target language script]
 
 ROMANISED:
-[If the translation is in any non-English language including Hindi, Gujarati, Marathi, Tamil, Telugu, or Spanish, provide a Romanised phonetic version here using simple English letters so that someone who speaks the language but cannot read the script can read it aloud naturally. Keep it simple and phonetic — write it exactly as it sounds. If the translation is in English, write NONE here.]
+[If the translation is in any non-English language including Hindi, Gujarati, Marathi, Tamil, Telugu, Spanish, German, or Japanese, provide a Romanised phonetic version here using simple English letters so that someone who speaks the language but cannot read the script can read it aloud naturally. Keep it simple and phonetic — write it exactly as it sounds. If the translation is in English, write NONE here.]
 
 CULTURAL_NOTE:
 [One or two sentences on tone, cultural meaning, or nuance]"""
@@ -77,59 +78,97 @@ def translate():
     if source_lang == target_lang:
         return jsonify({'error': 'Please select two different languages'}), 400
 
-    user_message = f"Translate from {source_lang} to {target_lang}: {text}"
+    try:
+        proverb_match = find_proverb(text, source_lang)
 
-    response = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=1024,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_message}]
+        user_message = f"Translate from {source_lang} to {target_lang}: {text}"
+
+        if proverb_match:
+            user_message += f"\n\nNote: This is a known {source_lang} proverb. Its real meaning is: {proverb_match['real_meaning']}. Natural English equivalent: {proverb_match['english_equivalent']}. Use this cultural knowledge in your translation."
+
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=1024,
+            system=SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": user_message}]
+        )
+
+        full_response = response.content[0].text
+
+        lines = full_response.split('\n')
+        translation_lines = []
+        romanised_lines = []
+        note_lines = []
+        mode = None
+
+        for line in lines:
+            upper = line.strip().upper()
+            if upper.startswith('TRANSLATION:'):
+                mode = 'translation'
+                rest = line.replace('TRANSLATION:', '').replace('translation:', '').strip()
+                if rest:
+                    translation_lines.append(rest)
+            elif upper.startswith('ROMANISED:'):
+                mode = 'romanised'
+                rest = line.replace('ROMANISED:', '').replace('romanised:', '').strip()
+                if rest:
+                    romanised_lines.append(rest)
+            elif upper.startswith('CULTURAL_NOTE:'):
+                mode = 'note'
+                rest = line.replace('CULTURAL_NOTE:', '').replace('cultural_note:', '').strip()
+                if rest:
+                    note_lines.append(rest)
+            elif mode == 'translation' and line.strip():
+                translation_lines.append(line)
+            elif mode == 'romanised' and line.strip():
+                romanised_lines.append(line)
+            elif mode == 'note' and line.strip():
+                note_lines.append(line)
+
+        translation = '\n'.join(translation_lines).strip() or full_response.strip()
+        romanised = '\n'.join(romanised_lines).strip()
+        cultural_note = '\n'.join(note_lines).strip()
+
+        if romanised.upper() == 'NONE':
+            romanised = ''
+
+        log_usage(source_lang, target_lang, len(text), True)
+
+        return jsonify({
+            'translation': translation,
+            'romanised': romanised,
+            'cultural_note': cultural_note,
+            'input_text': text
+        })
+
+    except Exception as e:
+        log_usage(source_lang, target_lang, len(text), False)
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/feedback', methods=['POST'])
+def feedback():
+    data = request.get_json()
+    log_feedback(
+        data.get('source_lang'),
+        data.get('target_lang'),
+        data.get('input_text'),
+        data.get('translation'),
+        data.get('rating'),
+        data.get('comment', '')
     )
+    return jsonify({'success': True})
 
-    full_response = response.content[0].text
 
-    lines = full_response.split('\n')
-    translation_lines = []
-    romanised_lines = []
-    note_lines = []
-    mode = None
-
-    for line in lines:
-        upper = line.strip().upper()
-        if upper.startswith('TRANSLATION:'):
-            mode = 'translation'
-            rest = line.replace('TRANSLATION:', '').replace('translation:', '').strip()
-            if rest:
-                translation_lines.append(rest)
-        elif upper.startswith('ROMANISED:'):
-            mode = 'romanised'
-            rest = line.replace('ROMANISED:', '').replace('romanised:', '').strip()
-            if rest:
-                romanised_lines.append(rest)
-        elif upper.startswith('CULTURAL_NOTE:'):
-            mode = 'note'
-            rest = line.replace('CULTURAL_NOTE:', '').replace('cultural_note:', '').strip()
-            if rest:
-                note_lines.append(rest)
-        elif mode == 'translation' and line.strip():
-            translation_lines.append(line)
-        elif mode == 'romanised' and line.strip():
-            romanised_lines.append(line)
-        elif mode == 'note' and line.strip():
-            note_lines.append(line)
-
-    translation = '\n'.join(translation_lines).strip() or full_response.strip()
-    romanised = '\n'.join(romanised_lines).strip()
-    cultural_note = '\n'.join(note_lines).strip()
-
-    if romanised.upper() == 'NONE':
-        romanised = ''
-
-    return jsonify({
-        'translation': translation,
-        'romanised': romanised,
-        'cultural_note': cultural_note
-    })
+@app.route('/dashboard')
+def dashboard():
+    stats = get_stats()
+    recent_feedback = get_recent_feedback()
+    recent_translations = get_recent_translations()
+    return render_template('dashboard.html',
+                           stats=stats,
+                           recent_feedback=recent_feedback,
+                           recent_translations=recent_translations)
 
 
 if __name__ == '__main__':

@@ -39,8 +39,6 @@
     .lang-group select:focus { border-color: var(--saffron); }
     .swap-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--mist-dark); background: var(--white); cursor: pointer; font-size: 18px; color: var(--ink-light); transition: all 0.25s; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; }
     .swap-btn:hover { border-color: var(--saffron); color: var(--saffron); transform: rotate(180deg); }
-
-    /* Input area */
     .input-section { margin-bottom: 20px; }
     .input-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .input-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-light); }
@@ -51,23 +49,17 @@
     textarea::placeholder { color: #B0ABA4; }
     textarea:focus { border-color: var(--saffron); }
     .char-count { font-size: 11px; color: #B0ABA4; text-align: right; margin-top: 4px; }
-
-    /* Output area */
     .output-section { margin-bottom: 20px; }
     .output-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .output-actions { display: flex; gap: 8px; }
-    .action-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--mist-dark); background: var(--white); cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; position: relative; }
+    .action-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--mist-dark); background: var(--white); cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .action-btn:hover { border-color: var(--saffron); }
     .action-btn.copied { border-color: #2D9E8F; background: #E8F5F3; }
     .output-box { width: 100%; min-height: 160px; padding: 16px; border: 2px solid transparent; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; color: var(--ink); background: var(--teal-pale); }
-
-    /* Romanised */
     .romanised-section { margin-bottom: 20px; display: none; }
     .romanised-section.visible { display: block; }
     .romanised-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .romanised-box { width: 100%; padding: 14px 16px; border: 1.5px solid var(--mist-dark); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; color: var(--ink-light); background: #FAFAF8; font-style: italic; }
-
-    /* Feedback */
     .feedback-section { display: none; align-items: center; gap: 12px; margin-bottom: 20px; }
     .feedback-section.visible { display: flex; }
     .feedback-label { font-size: 13px; color: var(--ink-light); }
@@ -77,7 +69,15 @@
     .feedback-btn.selected-bad { border-color: #E53935; background: #FFF0F0; }
     .feedback-thanks { font-size: 13px; color: #2D9E8F; display: none; }
     .feedback-thanks.visible { display: block; }
-
+    .inline-feedback { display: none; background: #FFF8F5; border: 1.5px solid #F5A05A; border-radius: 14px; padding: 16px 20px; margin-bottom: 20px; }
+    .inline-feedback.visible { display: block; }
+    .inline-feedback-label { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 10px; }
+    .inline-feedback textarea { width: 100%; height: 80px; padding: 12px; border: 1.5px solid var(--mist-dark); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; resize: none; outline: none; background: white; }
+    .inline-feedback textarea:focus { border-color: var(--saffron); }
+    .inline-feedback-actions { display: flex; gap: 10px; margin-top: 10px; }
+    .submit-feedback-btn { padding: 8px 20px; background: var(--saffron); color: white; border: none; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .submit-feedback-btn:hover { background: #D4561A; }
+    .skip-feedback-btn { padding: 8px 20px; background: transparent; color: var(--ink-light); border: 1.5px solid var(--mist-dark); border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; }
     .error-msg { background: #FFF0F0; border: 1.5px solid #FFCDD2; border-radius: 12px; padding: 13px 16px; font-size: 14px; color: #C62828; margin-bottom: 16px; display: none; word-break: break-word; }
     .error-msg.visible { display: block; }
     .btn-row { display: flex; justify-content: center; margin-bottom: 24px; }
@@ -124,36 +124,39 @@
   </header>
 
   <div class="card">
+
     <!-- Language Row -->
     <div class="lang-row">
       <div class="lang-group">
         <label>Translate From</label>
         <select id="sourceLang">
+          <option value="" disabled selected>From language</option>
           <option value="English">English</option>
-          <option value="Hindi">Hindi — हिन्दी</option>
-          <option value="Gujarati" selected>Gujarati — ગુજરાતી</option>
-          <option value="Marathi">Marathi — मराठी</option>
-          <option value="Tamil">Tamil — தமிழ்</option>
-          <option value="Telugu">Telugu — తెలుగు</option>
-          <option value="Spanish">Spanish — Español</option>
-	  <option value="German">German — Deutsch</option>
-	  <option value="Japanese">Japanese — 日本語</option>
-        </select>
-      </div>
-      <button class="swap-btn" onclick="swapLanguages()" title="Swap languages">⇄</button>
-      <div class="lang-group">
-        <label>Translate To</label>
-        <select id="targetLang">
-          <option value="English" selected>English</option>
           <option value="Hindi">Hindi — हिन्दी</option>
           <option value="Gujarati">Gujarati — ગુજરાતી</option>
           <option value="Marathi">Marathi — मराठी</option>
           <option value="Tamil">Tamil — தமிழ்</option>
           <option value="Telugu">Telugu — తెలుగు</option>
           <option value="Spanish">Spanish — Español</option>
- 	  <option value="German">German — Deutsch</option>
-	  <option value="Japanese">Japanese — 日本語</option>      
-	 </select>
+          <option value="German">German — Deutsch</option>
+          <option value="Japanese">Japanese — 日本語</option>
+        </select>
+      </div>
+      <button class="swap-btn" onclick="swapLanguages()" title="Swap languages">⇄</button>
+      <div class="lang-group">
+        <label>Translate To</label>
+        <select id="targetLang">
+          <option value="" disabled selected>To language</option>
+          <option value="English">English</option>
+          <option value="Hindi">Hindi — हिन्दी</option>
+          <option value="Gujarati">Gujarati — ગુજરાતી</option>
+          <option value="Marathi">Marathi — मराठी</option>
+          <option value="Tamil">Tamil — தமிழ்</option>
+          <option value="Telugu">Telugu — తెలుగు</option>
+          <option value="Spanish">Spanish — Español</option>
+          <option value="German">German — Deutsch</option>
+          <option value="Japanese">Japanese — 日本語</option>
+        </select>
       </div>
     </div>
 
@@ -196,6 +199,16 @@
       <span class="feedback-thanks" id="feedbackThanks">Thanks for your feedback!</span>
     </div>
 
+    <!-- Inline feedback box -->
+    <div class="inline-feedback" id="inlineFeedback">
+      <p class="inline-feedback-label">What was wrong with this translation?</p>
+      <textarea id="feedbackText" placeholder="e.g. The Gujarati word felt wrong, or the tone was too formal..." rows="3"></textarea>
+      <div class="inline-feedback-actions">
+        <button class="submit-feedback-btn" onclick="submitInlineFeedback()">Send Feedback</button>
+        <button class="skip-feedback-btn" onclick="skipInlineFeedback()">Skip</button>
+      </div>
+    </div>
+
     <!-- Error -->
     <div class="error-msg" id="errorMsg"></div>
 
@@ -213,6 +226,7 @@
     <div class="cultural-note empty" id="culturalNote">
       <p class="note-placeholder">📝 Cultural context and tone notes will appear here after translation</p>
     </div>
+
   </div>
 
   <footer>
@@ -227,17 +241,10 @@
   let recognition = null;
   let isListening = false;
 
-  // Language to speech code mapping
   const langToSpeech = {
-    'English': 'en-US',
-    'Hindi': 'hi-IN',
-    'Gujarati': 'gu-IN',
-    'Marathi': 'mr-IN',
-    'Tamil': 'ta-IN',
-    'Telugu': 'te-IN',
-    'Spanish': 'es-ES',
-    'German': 'de-DE',
-    'Japanese': 'ja-JP'
+    'English': 'en-US', 'Hindi': 'hi-IN', 'Gujarati': 'gu-IN',
+    'Marathi': 'mr-IN', 'Tamil': 'ta-IN', 'Telugu': 'te-IN',
+    'Spanish': 'es-ES', 'German': 'de-DE', 'Japanese': 'ja-JP'
   };
 
   function updateCharCount() {
@@ -279,6 +286,7 @@
     document.getElementById('romanisedSection').classList.remove('visible');
     document.getElementById('feedbackSection').classList.remove('visible');
     document.getElementById('feedbackThanks').classList.remove('visible');
+    document.getElementById('inlineFeedback').classList.remove('visible');
     document.getElementById('thumbsUp').className = 'feedback-btn';
     document.getElementById('thumbsDown').className = 'feedback-btn';
     updateCulturalNote('');
@@ -295,71 +303,48 @@
     }
   }
 
-  // 🔊 Speak romanised
-  function speakRomanised() {
-    if (!currentRomanised) return;
-    speak(currentRomanised, 'en-US');
-  }
-
-  // 📋 Copy translation
   function copyTranslation() {
     if (!currentTranslation) return;
     navigator.clipboard.writeText(currentTranslation).then(() => {
       const btn = document.getElementById('copyBtn');
       btn.textContent = '✅';
       btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = '📋';
-        btn.classList.remove('copied');
-      }, 2000);
+      setTimeout(() => { btn.textContent = '📋'; btn.classList.remove('copied'); }, 2000);
     });
   }
 
-  // 🎤 Microphone
   function toggleMic() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       showError('Speech recognition is not supported in your browser. Please use Chrome.');
       return;
     }
-
-    if (isListening) {
-      recognition.stop();
-      return;
-    }
-
+    if (isListening) { recognition.stop(); return; }
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
-
     const sourceLang = document.getElementById('sourceLang').value;
     recognition.lang = langToSpeech[sourceLang] || 'en-US';
     recognition.continuous = false;
     recognition.interimResults = false;
-
     recognition.onstart = () => {
       isListening = true;
       document.getElementById('micBtn').classList.add('listening');
       document.getElementById('micBtn').textContent = '⏹️';
     };
-
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      document.getElementById('inputText').value = transcript;
+      document.getElementById('inputText').value = event.results[0][0].transcript;
       updateCharCount();
     };
-
     recognition.onend = () => {
       isListening = false;
       document.getElementById('micBtn').classList.remove('listening');
       document.getElementById('micBtn').textContent = '🎤';
     };
-
     recognition.onerror = (event) => {
       isListening = false;
       document.getElementById('micBtn').classList.remove('listening');
       document.getElementById('micBtn').textContent = '🎤';
       showError('Microphone error: ' + event.error + '. Please try again.');
     };
-
     recognition.start();
   }
 
@@ -367,11 +352,49 @@
   function giveFeedback(type) {
     document.getElementById('thumbsUp').className = 'feedback-btn' + (type === 'good' ? ' selected-good' : '');
     document.getElementById('thumbsDown').className = 'feedback-btn' + (type === 'bad' ? ' selected-bad' : '');
-    document.getElementById('feedbackThanks').classList.add('visible');
-    // Future: send feedback to backend for tracking
+    if (type === 'good') {
+      document.getElementById('feedbackThanks').classList.add('visible');
+      document.getElementById('inlineFeedback').classList.remove('visible');
+      sendFeedback('good', '');
+    } else {
+      document.getElementById('inlineFeedback').classList.add('visible');
+      document.getElementById('feedbackThanks').classList.remove('visible');
+    }
   }
 
-  // ✨ Main translate function
+  function submitInlineFeedback() {
+    const comment = document.getElementById('feedbackText').value.trim();
+    sendFeedback('bad', comment);
+    document.getElementById('inlineFeedback').classList.remove('visible');
+    const thanks = document.getElementById('feedbackThanks');
+    thanks.classList.add('visible');
+    thanks.textContent = '🙏 Thank you — this helps Tongues improve!';
+  }
+
+  function skipInlineFeedback() {
+    sendFeedback('bad', '');
+    document.getElementById('inlineFeedback').classList.remove('visible');
+    document.getElementById('feedbackThanks').classList.add('visible');
+  }
+
+  async function sendFeedback(rating, comment) {
+    try {
+      await fetch('/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source_lang: document.getElementById('sourceLang').value,
+          target_lang: document.getElementById('targetLang').value,
+          input_text: document.getElementById('inputText').value,
+          translation: currentTranslation,
+          rating: rating,
+          comment: comment
+        })
+      });
+    } catch(e) { console.log('Feedback error:', e); }
+  }
+
+  // ✨ Main translate
   async function runTranslation() {
     const inputText = document.getElementById('inputText').value.trim();
     const sourceLang = document.getElementById('sourceLang').value;
@@ -379,6 +402,8 @@
 
     hideError();
     if (!inputText) { showError('Please enter some text to translate.'); return; }
+    if (!sourceLang) { showError('Please select a From language.'); return; }
+    if (!targetLang) { showError('Please select a To language.'); return; }
     if (sourceLang === targetLang) { showError('Please select two different languages.'); return; }
 
     setLoading(true);
@@ -393,10 +418,7 @@
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong. Please try again.');
-      }
+      if (!response.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
 
       currentTranslation = data.translation;
       currentRomanised = data.romanised || '';
