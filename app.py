@@ -89,12 +89,16 @@ def translate():
         return jsonify({'error': 'Please select two different languages'}), 400
 
     try:
-        proverb_match = find_proverb(text, source_lang)
+        proverb_match = find_proverb(text, source_lang, target_lang)
 
         user_message = f"Translate from {source_lang} to {target_lang}: {text}"
 
         if proverb_match:
-            user_message += f"\n\nNote: This is a known {source_lang} proverb. Its real meaning is: {proverb_match['real_meaning']}. Natural English equivalent: {proverb_match['english_equivalent']}. Use this cultural knowledge in your translation."
+            if proverb_match.get('target_equivalent'):
+                equiv = proverb_match['target_equivalent']
+                user_message += f"\n\nNote: This is a known {source_lang} proverb. Its real meaning is: {proverb_match['real_meaning']}. There is a natural {target_lang} equivalent proverb: {equiv['equivalent_script']} ({equiv['equivalent_romanised']}). Use this equivalent proverb as your translation — do not translate literally."
+            else:
+                user_message += f"\n\nNote: This is a known {source_lang} proverb. Its real meaning is: {proverb_match['real_meaning']}. Natural English equivalent: {proverb_match['english_equivalent']}. Use this cultural knowledge in your translation."
 
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
