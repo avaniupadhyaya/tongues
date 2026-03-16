@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tongues — Natural Translation</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗣️</text></svg>"> 
- <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗣️</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -26,13 +26,34 @@
       background-image: radial-gradient(circle at 15% 15%, rgba(232,101,26,0.06) 0%, transparent 50%), radial-gradient(circle at 85% 80%, rgba(26,122,110,0.06) 0%, transparent 50%);
     }
     .container { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 40px 24px 80px; }
-    header { text-align: center; margin-bottom: 48px; }
+    header { text-align: center; margin-bottom: 32px; }
     .logo-icon { font-size: 44px; margin-bottom: 8px; display: block; }
     h1 { font-family: 'Playfair Display', serif; font-size: clamp(42px, 7vw, 64px); font-weight: 700; color: var(--ink); letter-spacing: -1px; line-height: 1; margin-bottom: 12px; }
     h1 span { color: var(--saffron); }
     .tagline { font-size: 15px; color: var(--ink-light); font-weight: 300; margin-bottom: 16px; }
     .lang-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
     .lang-pill { font-size: 12px; font-weight: 500; padding: 4px 14px; border-radius: 100px; background: var(--white); border: 1px solid var(--mist-dark); color: var(--ink-light); }
+
+    /* ── Word of the Day ── */
+    .wotd-card {
+      background: linear-gradient(135deg, #FFFBF0, #FFF5E0);
+      border: 1.5px solid var(--note-border);
+      border-radius: 20px;
+      padding: 20px 28px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .wotd-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+    .wotd-body { flex: 1; }
+    .wotd-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 6px; }
+    .wotd-script { font-size: 20px; font-weight: 600; color: var(--ink); margin-bottom: 2px; font-family: 'Playfair Display', serif; }
+    .wotd-roman { font-size: 13px; color: var(--ink-light); font-style: italic; margin-bottom: 6px; }
+    .wotd-meaning { font-size: 13px; color: var(--ink-light); line-height: 1.5; }
+    .wotd-lang { font-size: 11px; font-weight: 600; color: var(--saffron); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .wotd-card.loading .wotd-script { color: #B0ABA4; font-size: 14px; font-style: italic; font-family: 'DM Sans', sans-serif; font-weight: 400; }
+
     .card { background: var(--white); border-radius: 24px; padding: 36px; box-shadow: 0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); }
     .lang-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: end; margin-bottom: 24px; }
     .lang-group label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-light); margin-bottom: 8px; }
@@ -46,17 +67,55 @@
     .mic-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--mist-dark); background: var(--white); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .mic-btn:hover { border-color: var(--saffron); }
     .mic-btn.listening { border-color: #E53935; background: #FFF0F0; animation: pulse 1s infinite; }
-    textarea { width: 100%; height: 160px; padding: 16px; border: 2px solid var(--mist-dark); border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; color: var(--ink); resize: vertical; background: var(--white); outline: none; transition: border-color 0.2s; }
+    textarea { width: 100%; height: 180px; padding: 16px; border: 2px solid var(--mist-dark); border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; color: var(--ink); resize: none; background: var(--white); outline: none; transition: border-color 0.2s; }
     textarea::placeholder { color: #B0ABA4; }
     textarea:focus { border-color: var(--saffron); }
     .char-count { font-size: 11px; color: #B0ABA4; text-align: right; margin-top: 4px; }
     .output-section { margin-bottom: 20px; }
     .output-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .output-actions { display: flex; gap: 8px; }
+    .output-actions { display: flex; gap: 8px; align-items: center; }
     .action-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--mist-dark); background: var(--white); cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .action-btn:hover { border-color: var(--saffron); }
     .action-btn.copied { border-color: #2D9E8F; background: #E8F5F3; }
-    .output-box { width: 100%; min-height: 160px; padding: 16px; border: 2px solid transparent; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; color: var(--ink); background: var(--teal-pale); }
+    .action-btn.shared { border-color: #2D9E8F; background: #E8F5F3; }
+
+    /* ── Transliteration Toggle ── */
+    .translit-toggle {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: var(--mist);
+      border: 1.5px solid var(--mist-dark);
+      border-radius: 100px;
+      padding: 4px 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .translit-toggle.visible { display: flex; }
+    .translit-toggle:hover { border-color: var(--saffron); color: var(--saffron); }
+    .translit-toggle.roman-active { background: #FFF3E8; border-color: var(--saffron); color: var(--saffron); }
+    .toggle-pill {
+      width: 28px; height: 16px; border-radius: 100px;
+      background: var(--mist-dark); position: relative; transition: background 0.2s;
+    }
+    .toggle-pill::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: white; transition: transform 0.2s;
+    }
+    .translit-toggle.roman-active .toggle-pill { background: var(--saffron); }
+    .translit-toggle.roman-active .toggle-pill::after { transform: translateX(12px); }
+
+    .output-box { width: 100%; min-height: 180px; padding: 16px; border: 2px solid transparent; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; line-height: 1.6; color: var(--ink); background: var(--teal-pale); }
+
+    .io-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    @media (max-width: 680px) { .io-row { grid-template-columns: 1fr; } }
     .romanised-section { margin-bottom: 20px; display: none; }
     .romanised-section.visible { display: block; }
     .romanised-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
@@ -98,12 +157,8 @@
     footer em { font-family: 'Playfair Display', serif; color: var(--saffron); font-style: italic; }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    @media (max-width: 600px) {
-      .card { padding: 24px 16px; }
-      .lang-row { gap: 8px; }
-      .swap-btn { width: 36px; height: 36px; font-size: 14px; }
-    }
 
+    /* ── Feedback Banner ── */
     .feedback-banner {
       margin-top: 32px;
       background: linear-gradient(135deg, #FFF8F2, #FFF3E8);
@@ -117,10 +172,7 @@
       flex-wrap: wrap;
     }
     .feedback-banner-text { flex: 1; min-width: 200px; }
-    .feedback-banner-text strong {
-      font-size: 15px; font-weight: 600; color: var(--ink);
-      display: block; margin-bottom: 4px;
-    }
+    .feedback-banner-text strong { font-size: 15px; font-weight: 600; color: var(--ink); display: block; margin-bottom: 4px; }
     .feedback-banner-text span { font-size: 13px; color: var(--ink-light); }
     .feedback-banner-btn {
       padding: 10px 24px;
@@ -131,12 +183,14 @@
       box-shadow: 0 4px 12px rgba(232,101,26,0.3);
       transition: all 0.2s; text-decoration: none; display: inline-block;
     }
-    .feedback-banner-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(232,101,26,0.4);
-    }
+    .feedback-banner-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(232,101,26,0.4); }
+
     @media (max-width: 600px) {
+      .card { padding: 24px 16px; }
+      .lang-row { gap: 8px; }
+      .swap-btn { width: 36px; height: 36px; font-size: 14px; }
       .feedback-banner { flex-direction: column; text-align: center; }
+      .wotd-card { flex-direction: column; gap: 8px; }
     }
   </style>
 </head>
@@ -158,6 +212,18 @@
       <span class="lang-pill">日本語 Japanese</span>
     </div>
   </header>
+
+  <!-- Word of the Day -->
+  <div class="wotd-card loading" id="wotdCard">
+    <div class="wotd-icon">✨</div>
+    <div class="wotd-body">
+      <div class="wotd-label">Proverb of the Day</div>
+      <div class="wotd-script" id="wotdScript">Loading today's proverb...</div>
+      <div class="wotd-roman" id="wotdRoman" style="display:none"></div>
+      <div class="wotd-meaning" id="wotdMeaning"></div>
+      <div class="wotd-lang" id="wotdLang"></div>
+    </div>
+  </div>
 
   <div class="card">
 
@@ -196,8 +262,9 @@
       </div>
     </div>
 
-    <!-- Input -->
-    <div class="input-section">
+    <!-- Input + Output side by side -->
+    <div class="io-row">
+    <div class="input-section" style="margin-bottom:0">
       <div class="input-header">
         <span class="input-label">Your Text</span>
         <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Speak to translate">🎤</button>
@@ -211,6 +278,14 @@
       <div class="output-header">
         <span class="input-label">Translation</span>
         <div class="output-actions">
+          <!-- Transliteration Toggle -->
+          <button class="translit-toggle" id="translitToggle" onclick="toggleTranslit()" title="Switch between script and Roman">
+            <div class="toggle-pill"></div>
+            <span id="translitLabel">Abc</span>
+          </button>
+          <!-- Share Button -->
+          <button class="action-btn" id="shareBtn" onclick="shareTranslation()" title="Share this translation">🔗</button>
+          <!-- Copy Button -->
           <button class="action-btn" id="copyBtn" onclick="copyTranslation()" title="Copy translation">📋</button>
         </div>
       </div>
@@ -218,6 +293,7 @@
         <span style="color:#B0ABA4;font-style:italic;">Your natural, human translation will appear here...</span>
       </div>
     </div>
+    </div><!-- end io-row -->
 
     <!-- Romanised -->
     <div class="romanised-section" id="romanisedSection">
@@ -265,7 +341,7 @@
 
   </div>
 
-
+  <!-- Feedback Banner -->
   <div class="feedback-banner">
     <div class="feedback-banner-text">
       <strong>🙏 Help make Tongues better</strong>
@@ -283,6 +359,7 @@
   let currentTranslation = '';
   let currentRomanised = '';
   let currentTargetLang = '';
+  let isRomanMode = false;
   let recognition = null;
   let isListening = false;
 
@@ -291,6 +368,70 @@
     'Marathi': 'mr-IN', 'Tamil': 'ta-IN', 'Telugu': 'te-IN',
     'Spanish': 'es-ES', 'German': 'de-DE', 'Japanese': 'ja-JP'
   };
+
+  // ── Word of the Day ──
+  async function loadWordOfTheDay() {
+    try {
+      const res = await fetch('/proverb-of-the-day');
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const card = document.getElementById('wotdCard');
+      card.classList.remove('loading');
+      document.getElementById('wotdScript').textContent = data.script;
+      document.getElementById('wotdMeaning').textContent = data.real_meaning;
+      document.getElementById('wotdLang').textContent = data.language;
+      if (data.romanised) {
+        const r = document.getElementById('wotdRoman');
+        r.textContent = data.romanised;
+        r.style.display = 'block';
+      }
+    } catch(e) {
+      document.getElementById('wotdCard').style.display = 'none';
+    }
+  }
+
+  loadWordOfTheDay();
+
+  // ── Transliteration Toggle ──
+  function toggleTranslit() {
+    if (!currentTranslation) return;
+    isRomanMode = !isRomanMode;
+    const toggle = document.getElementById('translitToggle');
+    const label = document.getElementById('translitLabel');
+    const outputBox = document.getElementById('outputText');
+
+    if (isRomanMode && currentRomanised) {
+      toggle.classList.add('roman-active');
+      label.textContent = 'अ';
+      outputBox.textContent = currentRomanised;
+    } else {
+      isRomanMode = false;
+      toggle.classList.remove('roman-active');
+      label.textContent = 'Abc';
+      outputBox.textContent = currentTranslation;
+    }
+  }
+
+  // ── Share Translation ──
+  async function shareTranslation() {
+    if (!currentTranslation) return;
+    const sourceLang = document.getElementById('sourceLang').value;
+    const targetLang = document.getElementById('targetLang').value;
+    const inputText = document.getElementById('inputText').value.trim();
+    const shareText = `"${inputText}"\n\n→ ${currentTranslation}${currentRomanised ? '\n(' + currentRomanised + ')' : ''}\n\nTranslated from ${sourceLang} to ${targetLang} by Tongues 🗣️\nhttps://tongues-9zi1.onrender.com`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ text: shareText, url: 'https://tongues-9zi1.onrender.com' });
+      } else {
+        await navigator.clipboard.writeText(shareText);
+        const btn = document.getElementById('shareBtn');
+        btn.textContent = '✅';
+        btn.classList.add('shared');
+        setTimeout(() => { btn.textContent = '🔗'; btn.classList.remove('shared'); }, 2000);
+      }
+    } catch(e) { console.log('Share error', e); }
+  }
 
   function updateCharCount() {
     document.getElementById('charCount').textContent = document.getElementById('inputText').value.length;
@@ -327,6 +468,7 @@
   function resetOutput() {
     currentTranslation = '';
     currentRomanised = '';
+    isRomanMode = false;
     document.getElementById('outputText').innerHTML = '<span style="color:#B0ABA4;font-style:italic;">Your natural, human translation will appear here...</span>';
     document.getElementById('romanisedSection').classList.remove('visible');
     document.getElementById('feedbackSection').classList.remove('visible');
@@ -334,6 +476,9 @@
     document.getElementById('inlineFeedback').classList.remove('visible');
     document.getElementById('thumbsUp').className = 'feedback-btn';
     document.getElementById('thumbsDown').className = 'feedback-btn';
+    const toggle = document.getElementById('translitToggle');
+    toggle.classList.remove('visible', 'roman-active');
+    document.getElementById('translitLabel').textContent = 'Abc';
     updateCulturalNote('');
   }
 
@@ -393,7 +538,6 @@
     recognition.start();
   }
 
-  // 👍👎 Feedback
   function giveFeedback(type) {
     document.getElementById('thumbsUp').className = 'feedback-btn' + (type === 'good' ? ' selected-good' : '');
     document.getElementById('thumbsDown').className = 'feedback-btn' + (type === 'bad' ? ' selected-bad' : '');
@@ -439,7 +583,6 @@
     } catch(e) { console.log('Feedback error:', e); }
   }
 
-  // ✨ Main translate
   async function runTranslation() {
     const inputText = document.getElementById('inputText').value.trim();
     const sourceLang = document.getElementById('sourceLang').value;
@@ -473,6 +616,8 @@
       if (currentRomanised && currentRomanised.toUpperCase() !== 'NONE') {
         document.getElementById('romanisedText').textContent = currentRomanised;
         document.getElementById('romanisedSection').classList.add('visible');
+        // Show transliteration toggle only when romanised is available
+        document.getElementById('translitToggle').classList.add('visible');
       }
 
       document.getElementById('feedbackSection').classList.add('visible');
@@ -491,4 +636,3 @@
 </script>
 </body>
 </html>
-

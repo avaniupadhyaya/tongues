@@ -191,6 +191,25 @@ def feedback():
     return jsonify({'success': True})
 
 
+@app.route('/proverb-of-the-day')
+def proverb_of_the_day():
+    from database import get_db
+    from datetime import date
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(*) as total FROM proverbs')
+    total = cursor.fetchone()['total']
+    if total == 0:
+        conn.close()
+        return jsonify({'error': 'No proverbs found'}), 404
+    # Use today's date as seed so same proverb shows all day
+    day_index = date.today().toordinal() % total
+    cursor.execute('SELECT * FROM proverbs LIMIT 1 OFFSET ?', (day_index,))
+    row = cursor.fetchone()
+    conn.close()
+    return jsonify(dict(row))
+
+
 @app.route('/dashboard')
 def dashboard():
     stats = get_stats()
