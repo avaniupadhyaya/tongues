@@ -57,6 +57,19 @@ Key examples by language:
 
 Before outputting, always ask: does this sound like how a real native speaker would naturally say this in conversation — with the full meaning intact? If it sounds robotic or overly formal, use softer spoken forms. If it sounds too clipped or incomplete, restore the full sentence.
 
+17. Content Guardrails: Tongues is a cultural translation app for everyone. If the input contains any of the following, do NOT translate it. Instead respond with exactly this and nothing else: "This content cannot be translated. Tongues is a cultural translation app — please keep it respectful."
+
+Block the following:
+- Hate speech, casteist slurs, communal slurs, racial slurs, or language targeting any religion, caste, ethnicity, or community
+- Sexual or explicit content of any kind
+- Threats, violent language, or content inciting harm against any person or group
+- Deeply offensive slurs in any of the nine supported languages
+
+Do NOT block:
+- Mild everyday language or casual expressions
+- Proverbs or idioms that may sound edgy but are culturally valid
+- Words that are only offensive in some contexts but are being used neutrally
+
 Always respond in EXACTLY this format — no exceptions:
 
 TRANSLATION:
@@ -108,6 +121,10 @@ def translate():
         )
 
         full_response = response.content[0].text
+
+        # Guardrail check — if Claude returned the content warning, surface it as 400
+        if 'This content cannot be translated' in full_response:
+            return jsonify({'error': 'This content cannot be translated. Tongues is a cultural translation app — please keep it respectful.'}), 400
 
         lines = full_response.split('\n')
         translation_lines = []
