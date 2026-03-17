@@ -362,8 +362,10 @@
   let isRomanMode = false;
   let recognition = null;
 
-  // Hide mic button if browser does not support speech recognition
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+  // Hide mic button on iOS (all browsers on iOS use WebKit and don't support Web Speech API)
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const noSpeech = !('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window);
+  if (isIOS || noSpeech) {
     document.getElementById('micBtn').style.display = 'none';
   }
   let isListening = false;
