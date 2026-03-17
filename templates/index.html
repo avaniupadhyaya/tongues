@@ -361,6 +361,11 @@
   let currentTargetLang = '';
   let isRomanMode = false;
   let recognition = null;
+
+  // Hide mic button if browser does not support speech recognition
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    document.getElementById('micBtn').style.display = 'none';
+  }
   let isListening = false;
 
   const langToSpeech = {
