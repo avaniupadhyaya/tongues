@@ -79,6 +79,8 @@
     .action-btn.copied { border-color: #2D9E8F; background: #E8F5F3; }
     .action-btn.shared { border-color: #2D9E8F; background: #E8F5F3; }
 
+
+    .action-btn.speaking { border-color: var(--saffron); background: #FFF3E8; animation: pulse 1s infinite; }
     /* ── Transliteration Toggle ── */
     .translit-toggle {
       display: none;
@@ -316,6 +318,8 @@
             <div class="toggle-pill"></div>
             <span id="translitLabel">Abc</span>
           </button>
+          <!-- Speaker Button -->
+          <button class="action-btn" id="speakerBtn" onclick="speakTranslation()" title="Listen to translation">🔊</button>
           <!-- Share Button -->
           <button class="action-btn" id="shareBtn" onclick="shareTranslation()" title="Share this translation">🔗</button>
           <!-- Copy Button -->
@@ -523,6 +527,9 @@
     toggle.classList.remove('visible', 'roman-active');
     document.getElementById('translitLabel').textContent = 'Abc';
     updateCulturalNote('');
+    const spkBtn = document.getElementById('speakerBtn');
+    if (spkBtn) { spkBtn.textContent = '🔊'; spkBtn.classList.remove('speaking'); }
+    if (audioPlayer) { audioPlayer.pause(); audioPlayer = null; }
     document.getElementById('alternativesSection').classList.remove('visible');
     document.getElementById('alternativesList').classList.remove('visible');
     document.getElementById('alternativesList').innerHTML = '';
@@ -630,6 +637,68 @@
     } catch(e) { console.log('Feedback error:', e); }
   }
 
+
+
+  // ── Text to Speech ──
+  let audioPlayer = null;
+
+  async function speakTranslation() {
+    if (!currentTranslation) return;
+    const btn = document.getElementById('speakerBtn');
+
+    // Stop if already playing
+    if (audioPlayer && !audioPlayer.paused) {
+      audioPlayer.pause();
+      audioPlayer.currentTime = 0;
+      btn.textContent = '🔊';
+      btn.classList.remove('speaking');
+      return;
+    }
+
+    btn.textContent = '⏳';
+    btn.classList.add('speaking');
+
+    try {
+      const response = await fetch('/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: currentTranslation,
+          language: currentTargetLang
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.audio) throw new Error(data.error || 'TTS failed');
+
+      const audioBlob = new Blob(
+        [Uint8Array.from(atob(data.audio), c => c.charCodeAt(0))],
+        { type: 'audio/mp3' }
+      );
+      const audioUrl = URL.createObjectURL(audioBlob);
+      audioPlayer = new Audio(audioUrl);
+
+      btn.textContent = '⏹️';
+
+      audioPlayer.onended = () => {
+        btn.textContent = '🔊';
+        btn.classList.remove('speaking');
+        URL.revokeObjectURL(audioUrl);
+      };
+
+      audioPlayer.onerror = () => {
+        btn.textContent = '🔊';
+        btn.classList.remove('speaking');
+      };
+
+      audioPlayer.play();
+
+    } catch(e) {
+      console.error('TTS error:', e);
+      btn.textContent = '🔊';
+      btn.classList.remove('speaking');
+    }
+  }
 
   // ── Alternatives ──
   function toggleAlternatives() {

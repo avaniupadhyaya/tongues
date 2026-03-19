@@ -3,6 +3,8 @@ from anthropic import Anthropic
 from dotenv import load_dotenv
 from database import init_db, find_proverb, log_feedback, log_usage, get_stats, get_recent_feedback, get_recent_translations
 import os
+import requests
+import base64
 
 load_dotenv()
 
@@ -201,6 +203,50 @@ def translate():
 
     except Exception as e:
         log_usage(source_lang, target_lang, len(text), False)
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/tts', methods=['POST'])
+def tts():
+    data = request.get_json()
+    text = data.get('text', '').strip()
+    language = data.get('language', 'English')
+
+    if not text:
+        return jsonify({'error': 'No text provided'}), 400
+
+    # Map Tongues language names to Google Cloud TTS language codes and voices
+    voice_map = {
+        'English':  {'languageCode': 'en-US', 'name': 'en-US-Neural2-F'},
+        'Hindi':    {'languageCode': 'hi-IN', 'name': 'hi-IN-Neural2-A'},
+        'Gujarati': {'languageCode': 'gu-IN', 'name': 'gu-IN-Standard-A'},
+        'Marathi':  {'languageCode': 'mr-IN', 'name': 'mr-IN-Standard-A'},
+        'Tamil':    {'languageCode': 'ta-IN', 'name': 'ta-IN-Neural2-A'},
+        'Telugu':   {'languageCode': 'te-IN', 'name': 'te-IN-Standard-A'},
+        'Spanish':  {'languageCode': 'es-ES', 'name': 'es-ES-Neural2-A'},
+        'German':   {'languageCode': 'de-DE', 'name': 'de-DE-Neural2-A'},
+        'Japanese': {'languageCode': 'ja-JP', 'name': 'ja-JP-Neural2-B'},
+    }
+
+    voice = voice_map.get(language, voice_map['English'])
+    api_key = os.getenv('GOOGLE_TTS_API_KEY')
+
+    if not api_key:
+        return jsonify({'error': 'TTS not configured'}), 500
+
+    try:
+        response = requests.post(
+            f'https://texttospeech.googleapis.com/v1/text:synthesize?key={api_key}',
+            json={
+                'input': {'text': text},
+                'voice': voice,
+                'audioConfig': {'audioEncoding': 'MP3', 'speakingRate': 0.9}
+            }
+        )
+        response.raise_for_status()
+        audio_content = response.json().get('audioContent', '')
+        return jsonify({'audio': audio_content})
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
