@@ -386,6 +386,22 @@ def init_db():
             ('Gujarati', 'રજા, વાજા ને વાંદરા બધા સરખા', 'Raja vaaja ne vaandra badha sarakha', 'Royals trumpets and monkeys are all alike', 'People with authority but little intelligence all behave similarly and need careful handling', 'All that glitters is not gold', None),
             ('Gujarati', 'દૂધનો દાઝેલો છાશ પણ ફૂંકીને પીએ', 'Dudhno daazelo chhaash pan funkine piye', 'One burned by milk blows even on buttermilk', 'A person who has experienced a bad situation becomes overly cautious in the future', 'Once bitten twice shy', 'Very commonly used in Gujarati households'),
             ('Gujarati', 'રાત થોડી ને વેશ ઝાઝા', 'Raat thodi ne vesh zaaza', 'Short night and many costumes', 'Having too much work to do in too little time', 'Too many irons in the fire', None),
+
+            # ── Additional Hindi idioms and proverbs ──
+            ('Hindi', 'ईद का चाँद होना', 'Eid ka chaand hona', 'To be like the Eid moon', 'To be seen very rarely — like someone who appears once in a long while', 'Once in a blue moon', None),
+            ('Hindi', 'आँखों का तारा', 'Aankhon ka tara', 'Star of the eyes', 'Someone who is extremely beloved and dear', 'The apple of my eye', None),
+            ('Hindi', 'पेट में चूहे कूदना', 'Pet mein chuhe koodna', 'Mice jumping in the stomach', 'To be extremely hungry', 'My stomach is growling', None),
+            ('Hindi', 'दाल में कुछ काला होना', 'Daal mein kuch kaala hona', 'Something black in the dal', 'To suspect something is wrong or fishy', 'Something smells fishy', None),
+            ('Hindi', 'अकल का दुश्मन', 'Akal ka dushman', 'Enemy of intelligence', 'A complete fool or someone acting very stupidly', 'A complete idiot', None),
+            ('Hindi', 'बाल-बाल बचना', 'Baal baal bachna', 'Saved by a hair', 'To have a very narrow escape from danger', 'A close shave', None),
+            ('Hindi', 'पत्थर की लकीर', 'Patthar ki lakir', 'A line carved in stone', 'A firm unbreakable commitment or decision', 'Set in stone', None),
+            ('Hindi', 'हाथ साफ़ करना', 'Haath saaf karna', 'To clean one\'s hands', 'To steal something or take unfair advantage of a situation', 'To help oneself to something', None),
+            ('Hindi', 'चकमा देना', 'Chakma dena', 'To give a dodge', 'To deceive or cleverly escape from someone', 'To give someone the slip', None),
+            ('Hindi', 'आसमान पर चढ़ना', 'Aasmaan par chadna', 'To climb to the sky', 'To be excessively proud or arrogant', 'Too big for your boots', None),
+            ('Hindi', 'अपनी खिचड़ी अलग पकाना', 'Apni khichdi alag pakana', 'To cook one\'s own khichdi separately', 'To act independently or selfishly separate from the group', 'To go your own way', None),
+            ('Hindi', 'बंदर क्या जाने अदरक का स्वाद', 'Bandar kya jaane adrak ka swaad', 'What does a monkey know of ginger', 'An ignorant person cannot appreciate the value of something fine', 'Pearls before swine', None),
+            ('Hindi', 'उल्टा चोर कोतवाल को डांटे', 'Ulta chor kotwal ko daante', 'The thief scolds the police officer', 'The guilty person blames or accuses the innocent one', 'The pot calling the kettle black', None),
+            ('Hindi', 'खोदा पहाड़ निकली चुहिया', 'Khoda pahad nikli chuhiya', 'Dug a mountain out came a mouse', 'Enormous effort for a completely tiny and disappointing result', 'Much ado about nothing', None),
         ]
 
         cursor.executemany('''
@@ -441,6 +457,15 @@ def init_db():
             ('एका हाताने टाळी वाजत नाही', 'Marathi', 'Hindi', 'एक हाथ से ताली नहीं बजती', 'Ek haath se taali nahi bajti'),
             ('घर का भेदी लंका ढाए', 'Hindi', 'Marathi', 'घरचा भेदी लंका जाळी', 'Gharcha bhedi lanka jaali'),
             ('घरचा भेदी लंका जाळी', 'Marathi', 'Hindi', 'घर का भेदी लंका ढाए', 'Ghar ka bhedi lanka dhaye'),
+
+            # ── Hindi idiom equivalents ──
+            ('ईद का चाँद होना', 'Hindi', 'Gujarati', 'ભાગ્યે જ દેખાય', 'Bhaagye j dekhaay'),
+            ('દાળ-ભાત ઉઠાવી લેવા', 'Gujarati', 'Hindi', 'दाल में कुछ काला होना', 'Daal mein kuch kaala hona'),
+            ('आँखों का तारा', 'Hindi', 'Gujarati', 'આંખોનો તારો', 'Aankhono taaro'),
+            ('आँखों का तारा', 'Hindi', 'Marathi', 'डोळ्यांचा तारा', 'Dolyaancha taara'),
+            ('बाल-बाल बचना', 'Hindi', 'Gujarati', 'વાળ વાળ બચ્યા', 'Vaal vaal bachya'),
+            ('उल्टा चोर कोतवाल को डांटे', 'Hindi', 'Gujarati', 'ઘેર ઘેર માટીના ચૂલા', 'Gher gher maati na chula'),
+            ('उल्टा चोर कोतवाल को डांटे', 'Hindi', 'Marathi', 'उलटा चोर कोतवालाला दम देतो', 'Ulta chor kotwalala dam deto'),
 
             # ── Additional equivalents ──
             ('ખાલી ચણો વાગે ઘણો', 'Gujarati', 'Hindi', 'थोथा चना बाजे घना', 'Thotha chana baaje ghana'),
