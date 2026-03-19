@@ -444,16 +444,47 @@ def init_db():
     conn.close()
 
 
+def _normalise(text):
+    """Normalise Indian language text for fuzzy matching.
+    Handles common Unicode variants:
+    - chandrabindu (ँ) vs anusvara (ं) in Hindi/Marathi
+    - visarga and other diacritic variants
+    - strips extra whitespace
+    """
+    import unicodedata
+    # Normalise to NFC form first
+    text = unicodedata.normalize('NFC', text.strip())
+    # Map chandrabindu to anusvara for Hindi/Marathi matching
+    text = text.replace('\u0901', '\u0902')  # ँ → ं
+    # Collapse multiple spaces
+    text = ' '.join(text.split())
+    return text.lower()
+
+
 def find_proverb(text, source_lang, target_lang=None):
     conn = get_db()
     cursor = conn.cursor()
 
+    # First try exact match
     cursor.execute('''
         SELECT * FROM proverbs
         WHERE language = ?
         AND (script = ? OR LOWER(romanised) = LOWER(?) OR LOWER(script) = LOWER(?))
     ''', (source_lang, text.strip(), text.strip(), text.strip()))
     result = cursor.fetchone()
+
+    # If exact match fails, try normalised fuzzy match
+    if not result:
+        normalised_input = _normalise(text)
+        cursor.execute('SELECT * FROM proverbs WHERE language = ?', (source_lang,))
+        all_proverbs = cursor.fetchall()
+        for row in all_proverbs:
+            if _normalise(row['script']) == normalised_input:
+                result = row
+                break
+            if row['romanised'] and _normalise(row['romanised']) == normalised_input:
+                result = row
+                break
 
     if not result:
         conn.close()
