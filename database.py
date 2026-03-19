@@ -374,6 +374,18 @@ def init_db():
             ('Marathi', 'नदीत राहून माशाशी वैर नको', 'Nadit rahun mashaashi vair nako', 'Living in the river do not make enemies with the fish', 'Do not fight with those who are powerful in their own domain', 'Do not bite the hand that feeds you', None),
             ('Marathi', 'दिव्याखाली अंधार', 'Divyakhali andhaar', 'Darkness under the lamp', 'Those closest to the source are often least aware of it', 'The cobbler s children have no shoes', None),
             ('Marathi', 'सांगितले तेव्हा ऐकले नाही', 'Saangitle tevha aikale naahi', 'Did not listen when told', 'Ignoring good advice leads to regret later', 'You were warned', None),
+
+            # ── Additional Gujarati proverbs (culturally rich) ──
+            ('Gujarati', 'ઊંટના મોંમાં જીરું', 'Oont na moh maa jeeru', 'A cumin seed in a camel\'s mouth', 'Providing an insignificantly small amount to someone with massive needs', 'A drop in the ocean', None),
+            ('Gujarati', 'કાંઈ નહીં તો કાંસાંનું કંઠું', 'Kaai nahi to kaansaanu kanthu', 'If nothing else at least a brass necklace', 'Something is better than nothing — emphasising resourcefulness and making do', 'Something is better than nothing', None),
+            ('Gujarati', 'ખાલી ચણો વાગે ઘણો', 'Khaali chano vaage ghano', 'An empty chickpea makes the most noise', 'People with little knowledge or substance talk the most', 'Empty vessels make the most noise', None),
+            ('Gujarati', 'જેમનું કામ છે તેમ જ જાણે', 'Jemanu kaam chhe tem ja jaane', 'Only the person doing the task truly knows', 'Do not judge someone without understanding their effort and struggle', 'Walk a mile in my shoes', None),
+            ('Gujarati', 'મા તે મા બીજા વગડાના વા', 'Maa te maa bija vagda na va', 'Mother is mother others are just wind in the wilderness', 'No one can match the love and care of a mother', 'There is no love like a mother\'s love', None),
+            ('Gujarati', 'કોલસાની દલાલીમાં હાથ કાળા', 'Kolsaani dalaali maa haath kaala', 'Hands get blackened in coal brokerage', 'Engaging in dishonest or dirty work will inevitably taint you', 'If you lie down with dogs you get up with fleas', None),
+            ('Gujarati', 'ધરતીનો છેડો ઘર', 'Dharti no chhedo ghar', 'The end of the earth is home', 'No matter how far you travel true comfort is always found at home', 'There is no place like home', None),
+            ('Gujarati', 'રજા, વાજા ને વાંદરા બધા સરખા', 'Raja vaaja ne vaandra badha sarakha', 'Royals trumpets and monkeys are all alike', 'People with authority but little intelligence all behave similarly and need careful handling', 'All that glitters is not gold', None),
+            ('Gujarati', 'દૂધનો દાઝેલો છાશ પણ ફૂંકીને પીએ', 'Dudhno daazelo chhaash pan funkine piye', 'One burned by milk blows even on buttermilk', 'A person who has experienced a bad situation becomes overly cautious in the future', 'Once bitten twice shy', 'Very commonly used in Gujarati households'),
+            ('Gujarati', 'રાત થોડી ને વેશ ઝાઝા', 'Raat thodi ne vesh zaaza', 'Short night and many costumes', 'Having too much work to do in too little time', 'Too many irons in the fire', None),
         ]
 
         cursor.executemany('''
@@ -429,6 +441,16 @@ def init_db():
             ('एका हाताने टाळी वाजत नाही', 'Marathi', 'Hindi', 'एक हाथ से ताली नहीं बजती', 'Ek haath se taali nahi bajti'),
             ('घर का भेदी लंका ढाए', 'Hindi', 'Marathi', 'घरचा भेदी लंका जाळी', 'Gharcha bhedi lanka jaali'),
             ('घरचा भेदी लंका जाळी', 'Marathi', 'Hindi', 'घर का भेदी लंका ढाए', 'Ghar ka bhedi lanka dhaye'),
+
+            # ── Additional equivalents ──
+            ('ખાલી ચણો વાગે ઘણો', 'Gujarati', 'Hindi', 'थोथा चना बाजे घना', 'Thotha chana baaje ghana'),
+            ('ખાલી ચણો વાગે ઘણો', 'Gujarati', 'Marathi', 'रिकामे भांडे जास्त वाजते', 'Rikame bhaande jaast vaajate'),
+            ('ઊંટના મોંમાં જીરું', 'Gujarati', 'Hindi', 'ऊँट के मुँह में जीरा', 'Oont ke munh mein jeera'),
+            ('ઊંટના મોંમાં જીરું', 'Gujarati', 'Marathi', 'उंटाच्या तोंडाला जीरे', 'Untachya tondala jeere'),
+            ('ધરતીનો છેડો ઘર', 'Gujarati', 'Hindi', 'घर जैसी कोई जगह नहीं', 'Ghar jaisi koi jagah nahi'),
+            ('ધરતીનો છેડો ઘર', 'Gujarati', 'Marathi', 'घरासारखी कोणतीच जागा नाही', 'Gharasarikhi konatich jaagaa naahi'),
+            ('દૂધનો દાઝેલો છાશ પણ ફૂંકીને પીએ', 'Gujarati', 'Hindi', 'दूध का जला छाछ भी फूंक फूंक कर पीता है', 'Dudh ka jala chaach bhi funky funk kar peeta hai'),
+            ('દૂધનો દાઝેલો છાશ પણ ફૂંકીને પીએ', 'Gujarati', 'Marathi', 'दुधाने पोळलेला ताकही फुंकून पितो', 'Dudhane polalela taakhi phunkun pito'),
         ]
 
         for src_script, src_lang, tgt_lang, tgt_script, tgt_roman in equivalents:
