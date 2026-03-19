@@ -81,7 +81,10 @@ ROMANISED:
 [If the translation is in any non-English language including Hindi, Gujarati, Marathi, Tamil, Telugu, Spanish, German, or Japanese, provide a Romanised phonetic version here using simple English letters so that someone who speaks the language but cannot read the script can read it aloud naturally. Keep it simple and phonetic — write it exactly as it sounds. If the translation is in English, write NONE here.]
 
 CULTURAL_NOTE:
-[One or two sentences on tone, cultural meaning, or nuance]"""
+[One or two sentences on tone, cultural meaning, or nuance]
+
+ALTERNATIVES:
+[Provide 2-3 alternative translations only when there are meaningfully different options — for example a more formal version, a more casual version, a regional variant, or an idiomatic alternative. Format each alternative on its own line as: LABEL | translation text. Example: Formal | वह बहुत साहसी है. Labels should be short and descriptive — Formal, Casual, Idiomatic, Regional, Literal, More expressive, Softer tone, Stronger emphasis etc. If there are no meaningful alternatives, write NONE here.]"""
 
 
 @app.route('/')
@@ -132,6 +135,7 @@ def translate():
         translation_lines = []
         romanised_lines = []
         note_lines = []
+        alternatives_lines = []
         mode = None
 
         for line in lines:
@@ -151,12 +155,19 @@ def translate():
                 rest = line.replace('CULTURAL_NOTE:', '').replace('cultural_note:', '').strip()
                 if rest:
                     note_lines.append(rest)
+            elif upper.startswith('ALTERNATIVES:'):
+                mode = 'alternatives'
+                rest = line.replace('ALTERNATIVES:', '').replace('alternatives:', '').strip()
+                if rest:
+                    alternatives_lines.append(rest)
             elif mode == 'translation' and line.strip():
                 translation_lines.append(line)
             elif mode == 'romanised' and line.strip():
                 romanised_lines.append(line)
             elif mode == 'note' and line.strip():
                 note_lines.append(line)
+            elif mode == 'alternatives' and line.strip():
+                alternatives_lines.append(line)
 
         translation = '\n'.join(translation_lines).strip() or full_response.strip()
         romanised = '\n'.join(romanised_lines).strip()
@@ -165,13 +176,27 @@ def translate():
         if romanised.upper() == 'NONE':
             romanised = ''
 
+        # Parse alternatives into structured list
+        alternatives = []
+        raw_alts = '\n'.join(alternatives_lines).strip()
+        if raw_alts and raw_alts.upper() != 'NONE':
+            for alt_line in raw_alts.split('\n'):
+                alt_line = alt_line.strip()
+                if '|' in alt_line:
+                    parts = alt_line.split('|', 1)
+                    label = parts[0].strip().lstrip('-').strip()
+                    text_alt = parts[1].strip()
+                    if label and text_alt:
+                        alternatives.append({'label': label, 'text': text_alt})
+
         log_usage(source_lang, target_lang, len(text), True)
 
         return jsonify({
             'translation': translation,
             'romanised': romanised,
             'cultural_note': cultural_note,
-            'input_text': text
+            'input_text': text,
+            'alternatives': alternatives
         })
 
     except Exception as e:

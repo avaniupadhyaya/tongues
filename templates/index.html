@@ -158,6 +158,39 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
+
+    /* ── Alternatives ── */
+    .alternatives-section { margin-bottom: 20px; display: none; }
+    .alternatives-section.visible { display: block; }
+    .alternatives-toggle {
+      display: flex; align-items: center; gap: 8px;
+      background: none; border: 1.5px solid var(--mist-dark);
+      border-radius: 100px; padding: 7px 16px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      font-weight: 500; color: var(--ink-light); cursor: pointer;
+      transition: all 0.2s; margin-bottom: 12px;
+    }
+    .alternatives-toggle:hover { border-color: var(--saffron); color: var(--saffron); }
+    .alternatives-toggle.open { border-color: var(--saffron); color: var(--saffron); background: #FFF3E8; }
+    .alternatives-toggle .toggle-arrow { transition: transform 0.2s; font-size: 11px; }
+    .alternatives-toggle.open .toggle-arrow { transform: rotate(180deg); }
+    .alternatives-list { display: none; }
+    .alternatives-list.visible { display: flex; flex-direction: column; gap: 8px; }
+    .alt-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border: 1.5px solid var(--mist-dark);
+      border-radius: 12px; background: var(--white);
+      cursor: pointer; transition: all 0.2s; gap: 12px;
+    }
+    .alt-item:hover { border-color: var(--saffron); background: #FFF8F5; }
+    .alt-text { font-size: 15px; color: var(--ink); flex: 1; }
+    .alt-label {
+      font-size: 11px; font-weight: 600; padding: 3px 10px;
+      border-radius: 100px; background: #EEF2FF; color: #5B6CF0;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .alt-copy { font-size: 13px; color: #B0ABA4; flex-shrink: 0; transition: color 0.2s; }
+    .alt-item:hover .alt-copy { color: var(--saffron); }
     /* ── Feedback Banner ── */
     .feedback-banner {
       margin-top: 32px;
@@ -303,6 +336,16 @@
       <div class="romanised-box" id="romanisedText"></div>
     </div>
 
+
+    <!-- Alternatives -->
+    <div class="alternatives-section" id="alternativesSection">
+      <button class="alternatives-toggle" id="alternativesToggle" onclick="toggleAlternatives()">
+        <span>See alternatives</span>
+        <span class="toggle-arrow">▼</span>
+      </button>
+      <div class="alternatives-list" id="alternativesList"></div>
+    </div>
+
     <!-- Feedback -->
     <div class="feedback-section" id="feedbackSection">
       <span class="feedback-label">Was this translation helpful?</span>
@@ -361,13 +404,6 @@
   let currentTargetLang = '';
   let isRomanMode = false;
   let recognition = null;
-
-  // Hide mic button on iOS (all browsers on iOS use WebKit and don't support Web Speech API)
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  const noSpeech = !('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window);
-  if (isIOS || noSpeech) {
-    document.getElementById('micBtn').style.display = 'none';
-  }
   let isListening = false;
 
   const langToSpeech = {
@@ -487,6 +523,10 @@
     toggle.classList.remove('visible', 'roman-active');
     document.getElementById('translitLabel').textContent = 'Abc';
     updateCulturalNote('');
+    document.getElementById('alternativesSection').classList.remove('visible');
+    document.getElementById('alternativesList').classList.remove('visible');
+    document.getElementById('alternativesList').innerHTML = '';
+    document.getElementById('alternativesToggle').classList.remove('open');
   }
 
   function updateCulturalNote(note) {
@@ -590,6 +630,54 @@
     } catch(e) { console.log('Feedback error:', e); }
   }
 
+
+  // ── Alternatives ──
+  function toggleAlternatives() {
+    const toggle = document.getElementById('alternativesToggle');
+    const list = document.getElementById('alternativesList');
+    const isOpen = list.classList.contains('visible');
+    if (isOpen) {
+      list.classList.remove('visible');
+      toggle.classList.remove('open');
+    } else {
+      list.classList.add('visible');
+      toggle.classList.add('open');
+    }
+  }
+
+  function renderAlternatives(alternatives) {
+    const section = document.getElementById('alternativesSection');
+    const list = document.getElementById('alternativesList');
+    const toggle = document.getElementById('alternativesToggle');
+
+    if (!alternatives || alternatives.length === 0) {
+      section.classList.remove('visible');
+      return;
+    }
+
+    list.innerHTML = '';
+    alternatives.forEach(alt => {
+      const item = document.createElement('div');
+      item.className = 'alt-item';
+      item.innerHTML = `
+        <span class="alt-text">${alt.text}</span>
+        <span class="alt-label">${alt.label}</span>
+        <span class="alt-copy">📋</span>
+      `;
+      item.onclick = () => {
+        navigator.clipboard.writeText(alt.text).then(() => {
+          item.querySelector('.alt-copy').textContent = '✅';
+          setTimeout(() => { item.querySelector('.alt-copy').textContent = '📋'; }, 2000);
+        });
+      };
+      list.appendChild(item);
+    });
+
+    list.classList.remove('visible');
+    toggle.classList.remove('open');
+    section.classList.add('visible');
+  }
+
   async function runTranslation() {
     const inputText = document.getElementById('inputText').value.trim();
     const sourceLang = document.getElementById('sourceLang').value;
@@ -627,6 +715,7 @@
         document.getElementById('translitToggle').classList.add('visible');
       }
 
+      renderAlternatives(data.alternatives || []);
       document.getElementById('feedbackSection').classList.add('visible');
       updateCulturalNote(data.cultural_note);
 
