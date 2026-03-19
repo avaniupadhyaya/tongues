@@ -402,6 +402,18 @@ def init_db():
             ('Hindi', 'बंदर क्या जाने अदरक का स्वाद', 'Bandar kya jaane adrak ka swaad', 'What does a monkey know of ginger', 'An ignorant person cannot appreciate the value of something fine', 'Pearls before swine', None),
             ('Hindi', 'उल्टा चोर कोतवाल को डांटे', 'Ulta chor kotwal ko daante', 'The thief scolds the police officer', 'The guilty person blames or accuses the innocent one', 'The pot calling the kettle black', None),
             ('Hindi', 'खोदा पहाड़ निकली चुहिया', 'Khoda pahad nikli chuhiya', 'Dug a mountain out came a mouse', 'Enormous effort for a completely tiny and disappointing result', 'Much ado about nothing', None),
+
+            # ── Additional Marathi idioms and sayings ──
+            ('Marathi', 'अंग चोरणे', 'Ang chorane', 'To steal the body', 'To be lazy or deliberately shirk work and responsibility', 'To skive off', None),
+            ('Marathi', 'कपाळ फुटणे', 'Kapal futane', 'The forehead breaks', 'To face sudden bad luck or misfortune out of nowhere', 'When it rains it pours', None),
+            ('Marathi', 'डोळ्यांत खुपणे', 'Dolyaat khupane', 'To prick in the eyes', 'To be jealous of someone or something — it bothers you to see others doing well', 'Green with envy', None),
+            ('Marathi', 'तोंड काळे करणे', 'Tond kaale karane', 'To blacken the face', 'To be disgraced or to leave a place in shame', 'To lose face', None),
+            ('Marathi', 'डोक्याला हात लावणे', 'Dokyala haat lavane', 'To put a hand to the head', 'To be completely baffled or fall into deep worried thought', 'To be at your wit\'s end', None),
+            ('Marathi', 'कांगावा करणे', 'Kaangava karane', 'To create a kangava', 'To make a false scene or complain loudly and dramatically without real cause', 'To make a song and dance', None),
+            ('Marathi', 'गाढवाला गुलाबाची चव काय', 'Gadhvala gulaabachi chav kaay', 'What does a donkey know of the taste of roses', 'An ignorant person cannot appreciate the value of something fine or beautiful', 'Pearls before swine', None),
+            ('Marathi', 'आळशास दुप्पट कृपणास तिप्पट', 'Aalshyas duppat krupanas tippat', 'A lazy person pays double a miser pays triple', 'Laziness and miserliness both end up costing more in the long run', 'Penny wise pound foolish', None),
+            ('Marathi', 'पालथ्या घड्यावर पाणी', 'Palthya ghadyavar paani', 'Water on an overturned pot', 'Wasted effort — advice or help given to someone who refuses to receive it', 'Water off a duck\'s back', None),
+            ('Marathi', 'काखेत कळसा गावाला वळसा', 'Kaakhet kalsa gaavala valsa', 'The pot under the arm searching the whole village', 'Searching everywhere for something that is already in your possession', 'Looking for your glasses when they are on your head', None),
         ]
 
         cursor.executemany('''
@@ -457,6 +469,13 @@ def init_db():
             ('एका हाताने टाळी वाजत नाही', 'Marathi', 'Hindi', 'एक हाथ से ताली नहीं बजती', 'Ek haath se taali nahi bajti'),
             ('घर का भेदी लंका ढाए', 'Hindi', 'Marathi', 'घरचा भेदी लंका जाळी', 'Gharcha bhedi lanka jaali'),
             ('घरचा भेदी लंका जाळी', 'Marathi', 'Hindi', 'घर का भेदी लंका ढाए', 'Ghar ka bhedi lanka dhaye'),
+
+            # ── Marathi idiom equivalents ──
+            ('पालथ्या घड्यावर पाणी', 'Marathi', 'Hindi', 'बहरे के आगे क्या बजाना', 'Bahre ke aage kya bajaana'),
+            ('गाढवाला गुलाबाची चव काय', 'Marathi', 'Hindi', 'बंदर क्या जाने अदरक का स्वाद', 'Bandar kya jaane adrak ka swaad'),
+            ('गाढवाला गुलाबाची चव काय', 'Marathi', 'Gujarati', 'ગધેડાને ગુલાબની સુગંધ શું', 'Gadhedane gulaabni sugandh shu'),
+            ('तोंड काळे करणे', 'Marathi', 'Hindi', 'मुँह काला करना', 'Munh kaala karna'),
+            ('काखेत कळसा गावाला वळसा', 'Marathi', 'Hindi', 'ढूंढते रहो घर में है', 'Dhundhte raho ghar mein hai'),
 
             # ── Hindi idiom equivalents ──
             ('ईद का चाँद होना', 'Hindi', 'Gujarati', 'ભાગ્યે જ દેખાય', 'Bhaagye j dekhaay'),
